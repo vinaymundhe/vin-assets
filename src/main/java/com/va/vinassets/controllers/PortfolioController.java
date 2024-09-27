@@ -1,6 +1,8 @@
 package com.va.vinassets.controllers;
 
 // PortfolioController.java
+import com.va.vinassets.models.Investment;
+import com.va.vinassets.models.Portfolio;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

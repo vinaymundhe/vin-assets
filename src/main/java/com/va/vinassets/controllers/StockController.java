@@ -1,15 +1,21 @@
 package com.va.vinassets.controllers;
 
+import com.va.vinassets.services.StockService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/stocks")
 public class StockController {
 
+    @Autowired
+    private StockService stockService;
+
     @GetMapping("/{symbol}")
-    public String getStockPrice(@PathVariable String symbol) {
-        // Mock data: In reality, fetch stock data from an API
-        return "Stock Price of " + symbol + " is 150 USD";
+    public CompletableFuture<String> getStockProfile(@PathVariable String symbol) throws IOException {
+        return stockService.getStockProfile(symbol);
     }
 }
-
