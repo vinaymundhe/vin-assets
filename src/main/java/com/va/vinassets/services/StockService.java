@@ -15,7 +15,7 @@ public class StockService {
         private final String apiHost = "apidojo-yahoo-finance-v1.p.rapidapi.com";
         private final String baseUrl = "https://apidojo-yahoo-finance-v1.p.rapidapi.com/stock/v3/get-profile";
 
-        @Async
+        @Async("asyncExecutor")
         public CompletableFuture<String> getStockProfile(String symbol) throws IOException {
             AsyncHttpClient client = new DefaultAsyncHttpClient();
             String url = baseUrl + "?symbol=" + symbol + "&region=US&lang=en-US";
