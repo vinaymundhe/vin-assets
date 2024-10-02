@@ -34,23 +34,26 @@ public class StockService {
 
         // Making the API call asynchronously
         CompletableFuture<String> result = client.prepare("GET", url)
-             .setHeader("x-rapidapi-key", apiKey)
-             .setHeader("x-rapidapi-host", apiHost)
-              .execute()
-              .toCompletableFuture()
-              .thenApply(response -> {
+                .setHeader("x-rapidapi-key", apiKey)
+                .setHeader("x-rapidapi-host", apiHost)
+                .execute()
+                .toCompletableFuture()
+                .thenApply(response -> {
                     String responseBody = response.getResponseBody();
 
+                    if (responseBody.contains("\"result\":null")) {
+                        return "Error: Stock symbol not found.";
+                    }
                     // Save the fetched stock profile to the database
                     Stock stock = new Stock(symbol, responseBody);
                     stockRepository.save(stock);
 
                     return responseBody;
                     })
-              .exceptionally(ex -> {
+                .exceptionally(ex -> {
                     // Handle any exceptions here
                     return "Error: " + ex.getMessage();
-              });
+                });
         result.whenComplete((res, ex) -> {
                 try {
                     client.close();
