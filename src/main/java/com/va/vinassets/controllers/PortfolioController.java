@@ -1,29 +1,67 @@
 package com.va.vinassets.controllers;
 
-// PortfolioController.java
-import com.va.vinassets.models.Investment;
-import com.va.vinassets.models.Portfolio;
+import com.va.vinassets.models.Crypto;
+import com.va.vinassets.models.Stock;
+import com.va.vinassets.services.PortfolioService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/portfolio")
+@RequestMapping("/api")
 public class PortfolioController {
 
-    @GetMapping("/{userId}")
-    public Portfolio getPortfolio(@PathVariable String userId) {
-        // Mock data: In reality, this data comes from a database
-        List<Investment> stocks = List.of(
-                new Investment("AAPL", 10, 150),
-                new Investment("GOOGL", 5, 2800)
-        );
-        List<Investment> cryptos = List.of(
-                new Investment("bitcoin", 0.5, 40000),
-                new Investment("ethereum", 2, 3000)
-        );
+    @Autowired
+    private PortfolioService portfolioService;
 
-        return new Portfolio(stocks, cryptos);
+    // Get all stocks
+    @GetMapping("/stocks")
+    public List<Stock> getAllStocks() {
+        return portfolioService.getAllStocks();
+    }
+
+    // Get all cryptos
+    @GetMapping("/cryptos")
+    public List<Crypto> getAllCryptos() {
+        return portfolioService.getAllCryptos();
+    }
+
+    // Add new stock
+    @PostMapping("/stocks")
+    public Stock addStock(@RequestBody Stock stock) {
+        return portfolioService.addStock(stock);
+    }
+
+    // Add new crypto
+    @PostMapping("/cryptos")
+    public Crypto addCrypto(@RequestBody Crypto crypto) {
+        return portfolioService.addCrypto(crypto);
+    }
+
+    // Update stock
+    @PutMapping("/stocks")
+    public Stock updateStock(@RequestBody Stock stock) {
+        return portfolioService.updateStock(stock);
+    }
+
+    // Update crypto
+    @PutMapping("/cryptos")
+    public Crypto updateCrypto(@RequestBody Crypto crypto) {
+        return portfolioService.updateCrypto(crypto);
+    }
+
+    // Delete stock
+    @DeleteMapping("/stocks/{id}")
+    public void deleteStock(@PathVariable Long id) {
+        portfolioService.deleteStock(id);
+    }
+
+    // Delete crypto
+    @DeleteMapping("/cryptos/{id}")
+    public void deleteCrypto(@PathVariable Long id) {
+        portfolioService.deleteCrypto(id);
     }
 }
+
 

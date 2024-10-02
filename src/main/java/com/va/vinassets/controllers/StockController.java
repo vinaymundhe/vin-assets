@@ -14,7 +14,7 @@ public class StockController {
     @Autowired
     private StockService stockService;
 
-    @GetMapping("/{symbol}")
+    @GetMapping("/profile/{symbol}")
     public CompletableFuture<String> getStockProfile(@PathVariable String symbol) throws IOException {
         return stockService.getStockProfile(symbol);
     }
