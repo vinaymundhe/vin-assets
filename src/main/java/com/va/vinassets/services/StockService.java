@@ -21,8 +21,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class StockService {
 
-    private static final Logger logger = (Logger) LoggerFactory.getLogger(StockService.class);
-
     @Autowired
     private StockRepository stockRepository;
 
