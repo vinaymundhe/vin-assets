@@ -8,3 +8,4 @@ public interface PortfolioRepository extends JpaRepository<Portfolio, Long> {
     Optional<Portfolio> findByUserId(String userId);
 }
 
+

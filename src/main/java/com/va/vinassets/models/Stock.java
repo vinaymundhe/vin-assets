@@ -43,6 +43,9 @@ public class Stock {
         this.purchaseDate = purchaseDate;
     }
 
+    public Stock(String symbol, Object profileData, int quantity, double purchasePrice, LocalDate purchaseDate) {
+    }
+
     // Getters and Setters
     public Long getId() {
         return id;

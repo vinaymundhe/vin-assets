@@ -25,17 +25,6 @@ public class StockController {
         return stockService.getStockProfile(symbol);
     }
 
-    // New endpoint to add stock to the portfolio
-    @PostMapping("/add")
-    public CompletableFuture<String> addStockToPortfolio(
-            @RequestParam String symbol,
-            @RequestParam int quantity,
-            @RequestParam double purchasePrice,
-            @RequestParam String purchaseDate) throws IOException {
-        LocalDate date = LocalDate.parse(purchaseDate); // Parse purchaseDate from string
-        return stockService.addStockToPortfolio(symbol, quantity, purchasePrice, date);
-    }
-
     // New endpoint to get a user's portfolio (stocks + cryptos)
     @GetMapping("/portfolio/{userId}")
     public CompletableFuture<Portfolio> getPortfolio(@PathVariable String userId) {

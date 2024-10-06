@@ -9,7 +9,6 @@ public class Portfolio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String userId;  // Assuming you are tracking portfolios by user
 
     @OneToMany(cascade = CascadeType.ALL)

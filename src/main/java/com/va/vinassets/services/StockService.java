@@ -108,17 +108,6 @@ public class StockService {
         }
     }
 
-    // New method to add a stock to the portfolio
-    public CompletableFuture<String> addStockToPortfolio(String symbol, int quantity, double purchasePrice, LocalDate purchaseDate) throws IOException {
-        return getStockProfile(symbol) // Get stock profile first
-                .thenApply(profileData -> {
-                    // Create and save new stock
-                    Stock stock = new Stock(symbol, profileData, quantity, purchasePrice, purchaseDate);
-                    stockRepository.save(stock);
-                    return "Stock added to portfolio";
-                });
-    }
-
     // Example of calculating current value and P&L
     public CompletableFuture<Double> calculatePnL(String symbol) throws IOException {
         return getCurrentStockPrice(symbol)

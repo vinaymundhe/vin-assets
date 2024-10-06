@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
@@ -17,10 +18,16 @@ public class PortfolioController {
     @Autowired
     private PortfolioService portfolioService;
 
-    // Add stock to the portfolio
-    @PostMapping("/add-stock")
-    public CompletableFuture<String> addStockToPortfolio(@RequestParam String userId, @RequestParam String stockSymbol) throws IOException {
-        return portfolioService.addStockToPortfolio(userId, stockSymbol);
+    // New endpoint to add stock to the portfolio
+    @PostMapping("/add")
+    public CompletableFuture<String> addStockToPortfolio(
+            @RequestParam String userId,  // Add userId as a parameter
+            @RequestParam String symbol,
+            @RequestParam int quantity,
+            @RequestParam double purchasePrice,
+            @RequestParam String purchaseDate) throws IOException {
+        LocalDate date = LocalDate.parse(purchaseDate); // Parse purchaseDate from string
+        return portfolioService.addStockToPortfolio(userId, symbol, quantity, purchasePrice, date);  // Pass userId to the service
     }
 
     // Retrieve the user's combined portfolio
