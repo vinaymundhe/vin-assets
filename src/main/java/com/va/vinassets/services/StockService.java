@@ -5,15 +5,11 @@ import com.va.vinassets.exceptions.StockNotFoundException;
 import com.va.vinassets.models.Stock;
 import org.asynchttpclient.AsyncHttpClient;
 import org.asynchttpclient.DefaultAsyncHttpClient;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.logging.Logger;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -106,39 +102,5 @@ public class StockService {
             e.printStackTrace();
             return 0.0;  // Return 0.0 in case of an error
         }
-    }
-
-    // Example of calculating current value and P&L
-    public CompletableFuture<Double> calculatePnL(String symbol) throws IOException {
-        return getCurrentStockPrice(symbol)
-                .thenApply(currentPrice -> {
-                    Stock stock = stockRepository.findBySymbol(symbol);
-                    if (stock != null) {
-                        // Calculate P&L
-                        return stock.calculatePnl(currentPrice);
-                    }
-                    return 0.0; // If stock not found
-                });
-    }
-
-    public CompletableFuture<String> getPortfolioSummary() {
-        List<Stock> stocks = stockRepository.findAll();
-        return CompletableFuture.supplyAsync(() -> {
-            double totalCurrentValue = 0;
-            double totalPnL = 0;
-
-            for (Stock stock : stocks) {
-                double currentPrice = 0; // Sync call for current price
-                try {
-                    currentPrice = getCurrentStockPrice(stock.getSymbol()).join();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                totalCurrentValue += stock.getQuantity() * currentPrice;
-                totalPnL += stock.calculatePnl(currentPrice);
-            }
-
-            return "Total Current Value: " + totalCurrentValue + ", Total P&L: " + totalPnL;
-        });
     }
 }

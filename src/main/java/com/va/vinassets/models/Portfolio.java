@@ -1,9 +1,11 @@
 package com.va.vinassets.models;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "portfolio")
 public class Portfolio {
 
     @Id
@@ -11,22 +13,35 @@ public class Portfolio {
     private Long id;
     private String userId;  // Assuming you are tracking portfolios by user
 
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Stock> stocks;
+    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PortfolioStock> portfolioStocks = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Crypto> cryptos;
+    private double totalPnL; // Total Profit & Loss
+    private double investedValue; // Total amount invested in the portfolio
 
-    public Portfolio() {
+    // Add PortfolioStock to portfolio
+    public void addPortfolioStock(PortfolioStock portfolioStock) {
+        portfolioStocks.add(portfolioStock);
+        portfolioStock.setPortfolio(this);  // Set the foreign key relationship
     }
 
-    public Portfolio(String userId, List<Stock> stocks, List<Crypto> cryptos) {
+    // Remove PortfolioStock
+    public void removePortfolioStock(PortfolioStock portfolioStock) {
+        portfolioStocks.remove(portfolioStock);
+        portfolioStock.setPortfolio(null);
+    }
+
+    public Portfolio() {
+        this.portfolioStocks = new ArrayList<>();
+    }
+
+    public Portfolio(String userId) {
         this.userId = userId;
-        this.stocks = stocks;
-        this.cryptos = cryptos;
+        this.portfolioStocks = new ArrayList<>();
     }
 
     // Getters and setters
+
     public Long getId() {
         return id;
     }
@@ -43,29 +58,27 @@ public class Portfolio {
         this.userId = userId;
     }
 
-    public List<Stock> getStocks() {
-        return stocks;
+    public List<PortfolioStock> getPortfolioStocks() {
+        return portfolioStocks;
     }
 
-    public void setStocks(List<Stock> stocks) {
-        this.stocks = stocks;
+    public void setPortfolioStocks(List<PortfolioStock> portfolioStocks) {
+        this.portfolioStocks = portfolioStocks;
     }
 
-    public List<Crypto> getCryptos() {
-        return cryptos;
+    public double getTotalPnL() {
+        return totalPnL;
     }
 
-    public void setCryptos(List<Crypto> cryptos) {
-        this.cryptos = cryptos;
+    public void setTotalPnL(double totalPnL) {
+        this.totalPnL = totalPnL;
     }
 
-    // Methods to add stocks and cryptos
-    public void addStock(Stock stock) {
-        this.stocks.add(stock);
+    public double getInvestedValue() {
+        return investedValue;
     }
 
-    public void addCrypto(Crypto crypto) {
-        this.cryptos.add(crypto);
+    public void setInvestedValue(double investedValue) {
+        this.investedValue = investedValue;
     }
 }
-
