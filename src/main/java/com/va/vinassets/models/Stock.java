@@ -23,6 +23,9 @@ public class Stock {
         this.profileData = profileData;
     }
 
+    public Stock(String symbol) {
+    }
+
     // Getters and setters
     public Long getId() {
         return id;

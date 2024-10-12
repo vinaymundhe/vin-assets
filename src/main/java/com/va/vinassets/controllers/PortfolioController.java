@@ -1,6 +1,5 @@
 package com.va.vinassets.controllers;
 
-import com.va.vinassets.models.Portfolio;
 import com.va.vinassets.services.PortfolioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -28,10 +27,10 @@ public class PortfolioController {
             @RequestParam double purchasePrice,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate purchaseDate) throws IOException {
 
-        // Call the service and return a proper ResponseEntity
+        // Handle async operation using CompletableFuture
         return portfolioService.addStockToPortfolio(userId, symbol, quantity, purchasePrice, purchaseDate)
-                .thenApply(result -> new ResponseEntity<>(result, HttpStatus.OK))
-                .exceptionally(ex -> new ResponseEntity<>("Error adding stock: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));
+                .thenApply(result -> new ResponseEntity<>(result, HttpStatus.OK))  // Handle success
+                .exceptionally(ex -> new ResponseEntity<>("Error adding stock: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR));  // Handle error
     }
 
     @DeleteMapping("/remove")
@@ -44,11 +43,21 @@ public class PortfolioController {
 
     // Endpoint to get the user's portfolio
     @GetMapping("/user/{userId}")
-    public CompletableFuture<ResponseEntity<Portfolio>> getUserPortfolio(@PathVariable String userId) throws IOException {
+    public CompletableFuture<ResponseEntity<?>> getUserPortfolio(@PathVariable String userId) {
         return portfolioService.getUserPortfolio(userId)
-                .thenApply(ResponseEntity::ok)
-                .exceptionally(ex -> ResponseEntity.badRequest().body(null));
+                .thenApply(portfolio -> {
+                    if (portfolio == null || portfolio.getPortfolioStocks().isEmpty()) {
+                        return ResponseEntity.notFound().build(); // Return 404 if no portfolio is found
+                    }
+                    return ResponseEntity.ok(portfolio); // Return 200 with the portfolio if found
+                })
+                .exceptionally(ex -> {
+                    // Log the exception for debugging purposes
+                    ex.printStackTrace();
+                    return ResponseEntity.badRequest().body(null); // Return 400 for any other errors
+                });
     }
+
 
     // Endpoint to find a specific stock in the portfolio
     @GetMapping("/user/{userId}/stock/{symbol}")

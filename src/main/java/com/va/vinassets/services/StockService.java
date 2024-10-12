@@ -8,6 +8,7 @@ import org.asynchttpclient.DefaultAsyncHttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
@@ -17,8 +18,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class StockService {
 
+    private final StockRepository stockRepository;
+
     @Autowired
-    private StockRepository stockRepository;
+    public StockService(StockRepository stockRepository) {
+        this.stockRepository = stockRepository;  // Inject StockRepository via constructor
+    }
 
     private final String apiKey = "00789db411mshaf17852c311cc33p1bee58jsnc42f3f06271e";  // Use your API key here
     private final String apiHostProfile = "apidojo-yahoo-finance-v1.p.rapidapi.com";
@@ -80,7 +85,7 @@ public class StockService {
                     double currentPrice = parseCurrentPriceFromResponse(responseBody);
                     return currentPrice;
                 })
-                .exceptionally(ex -> 0.0);
+                .exceptionally(ex -> 0.0);  // Return 0.0 in case of error
 
         result.whenComplete((res, ex) -> {
             try {
@@ -95,12 +100,16 @@ public class StockService {
     // Utility method to parse the current stock price from the API response
     private double parseCurrentPriceFromResponse(String responseBody) {
         try {
-            // Example JSON parsing logic
             JsonNode root = new ObjectMapper().readTree(responseBody);
             return root.path("price").asDouble();
         } catch (Exception e) {
             e.printStackTrace();
             return 0.0;  // Return 0.0 in case of an error
         }
+    }
+
+    // Save stock in the repository
+    public void saveStock(Stock stock) {
+        stockRepository.save(stock);
     }
 }

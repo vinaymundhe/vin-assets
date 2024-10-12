@@ -9,8 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface StockRepository extends JpaRepository<Stock, Long> {
-    // Custom query methods can be added here if needed
     Stock findBySymbol(String symbol);
-    List<Stock> findAll(); // To retrieve all stocks in the portfolio
 }
 

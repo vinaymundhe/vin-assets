@@ -1,5 +1,6 @@
 package com.va.vinassets.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,8 @@ public class Portfolio {
     private Long id;
     private String userId;  // Assuming you are tracking portfolios by user
 
-    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JsonManagedReference // Indicates that this is the parent in the relationship
     private List<PortfolioStock> portfolioStocks = new ArrayList<>();
 
     private double totalPnL; // Total Profit & Loss

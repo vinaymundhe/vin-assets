@@ -20,7 +20,7 @@ public class PortfolioService {
     private PortfolioRepository portfolioRepository;
 
     @Autowired
-    private StockService stockService; // Reference StockService
+    private StockService stockService; // Inject StockService
 
     // Method to add a stock to the portfolio
     public CompletableFuture<String> addStockToPortfolio(String userId, String symbol, int quantity, double purchasePrice, LocalDate purchaseDate) throws IOException {
@@ -48,11 +48,16 @@ public class PortfolioService {
                 return "Stock with this symbol already exists in the portfolio.";
             }
 
+            // Create a new Stock object and save it first
+            Stock stock = new Stock(symbol, profileData);  // Assuming Stock model has a constructor for symbol and profileData
+            stockService.saveStock(stock); // Ensure stock is persisted before adding it to PortfolioStock
+
             // Create a new PortfolioStock and add it to the portfolio
-            Stock stock = new Stock(symbol, profileData); // Assuming Stock model has a constructor for symbol and profile
             PortfolioStock portfolioStock = new PortfolioStock(stock, quantity, purchasePrice, purchaseDate);
             portfolio.addPortfolioStock(portfolioStock);  // Add to the portfolio using the method in the Portfolio entity
-            portfolioRepository.save(portfolio);  // Save the updated portfolio
+
+            // Save the updated portfolio with the new stock
+            portfolioRepository.save(portfolio);
 
             return "Stock added to portfolio successfully.";
         });
@@ -101,7 +106,7 @@ public class PortfolioService {
     }
 
     // Method to get the user's portfolio, including overall PnL and invested value
-    public CompletableFuture<Portfolio> getUserPortfolio(String userId) throws IOException {
+    public CompletableFuture<Portfolio> getUserPortfolio(String userId) {
         return CompletableFuture.supplyAsync(() -> {
             List<Portfolio> portfolios = portfolioRepository.findByUserId(userId);
             return portfolios.isEmpty() ? new Portfolio(userId) : portfolios.get(0); // Return an empty portfolio if not found
@@ -114,7 +119,7 @@ public class PortfolioService {
                     double pnl = calculatePnL(portfolioStock).join();  // Calculate PnL for each PortfolioStock
                     totalPnL += pnl; // Accumulate total PnL
                     investedValue += portfolioStock.getQuantity() * portfolioStock.getPurchasePrice(); // Total invested value
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace(); // Handle exception
                 }
             }

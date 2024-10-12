@@ -1,5 +1,6 @@
 package com.va.vinassets.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -20,6 +21,7 @@ public class PortfolioStock {
     // Newly added foreign key to Portfolio entity
     @ManyToOne
     @JoinColumn(name = "portfolio_id")  // This links to Portfolio's id
+    @JsonBackReference // Indicates that this is the child in the relationship
     private Portfolio portfolio;
 
     private int quantity;
