@@ -46,18 +46,17 @@ public class PortfolioController {
     public CompletableFuture<ResponseEntity<?>> getUserPortfolio(@PathVariable String userId) {
         return portfolioService.getUserPortfolio(userId)
                 .thenApply(portfolio -> {
-                    if (portfolio == null || portfolio.getPortfolioStocks().isEmpty()) {
-                        return ResponseEntity.notFound().build(); // Return 404 if no portfolio is found
+                    if (portfolio.getPortfolioStocks().isEmpty()) {
+                        return ResponseEntity.notFound().build(); // Return 404 if portfolio is empty
                     }
                     return ResponseEntity.ok(portfolio); // Return 200 with the portfolio if found
                 })
                 .exceptionally(ex -> {
                     // Log the exception for debugging purposes
                     ex.printStackTrace();
-                    return ResponseEntity.badRequest().body(null); // Return 400 for any other errors
+                    return ResponseEntity.status(500).body("An error occurred while fetching the portfolio."); // Return 500 on error
                 });
     }
-
 
     // Endpoint to find a specific stock in the portfolio
     @GetMapping("/user/{userId}/stock/{symbol}")

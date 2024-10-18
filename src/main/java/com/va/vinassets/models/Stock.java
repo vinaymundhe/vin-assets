@@ -11,19 +11,20 @@ public class Stock {
 
     private String symbol;  // Stock symbol (e.g., AAPL, MSFT)
 
-    @Lob
-    @Column(columnDefinition = "LONGTEXT")  // Optional: Set an explicit length if needed
-    private String profileData;  // Stores stock profile data fetched from an external API
+    // Add fields for the current stock summary instead of profile data
+    private String companyName;  // Current company name
+    private double currentPrice;  // Current stock price
+    private String currency;  // Currency of the stock
 
     public Stock() {
     }
 
-    public Stock(String symbol, String profileData) {
+    public Stock(Long id, String symbol, String companyName, double currentPrice, String currency) {
+        this.id = id;
         this.symbol = symbol;
-        this.profileData = profileData;
-    }
-
-    public Stock(String symbol) {
+        this.companyName = companyName;
+        this.currentPrice = currentPrice;
+        this.currency = currency;
     }
 
     // Getters and setters
@@ -43,11 +44,27 @@ public class Stock {
         this.symbol = symbol;
     }
 
-    public String getProfileData() {
-        return profileData;
+    public String getCompanyName() {
+        return companyName;
     }
 
-    public void setProfileData(String profileData) {
-        this.profileData = profileData;
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public double getCurrentPrice() {
+        return currentPrice;
+    }
+
+    public void setCurrentPrice(double currentPrice) {
+        this.currentPrice = currentPrice;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
     }
 }

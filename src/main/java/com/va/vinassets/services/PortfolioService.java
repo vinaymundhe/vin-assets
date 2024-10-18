@@ -1,5 +1,7 @@
 package com.va.vinassets.services;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.va.vinassets.dao.PortfolioRepository;
 import com.va.vinassets.models.Portfolio;
 import com.va.vinassets.models.PortfolioStock;
@@ -24,7 +26,10 @@ public class PortfolioService {
 
     // Method to add a stock to the portfolio
     public CompletableFuture<String> addStockToPortfolio(String userId, String symbol, int quantity, double purchasePrice, LocalDate purchaseDate) throws IOException {
-        return stockService.getStockProfile(symbol).thenApply(profileData -> {
+        return stockService.getCurrentStockSummary(symbol).thenApply(response -> {
+            // Parse the response to create a Stock object
+            Stock stock = parseStockFromResponse(response);
+
             // Find the user's portfolio by userId
             List<Portfolio> portfolios = portfolioRepository.findByUserId(userId);
             Portfolio portfolio;
@@ -48,19 +53,41 @@ public class PortfolioService {
                 return "Stock with this symbol already exists in the portfolio.";
             }
 
-            // Create a new Stock object and save it first
-            Stock stock = new Stock(symbol, profileData);  // Assuming Stock model has a constructor for symbol and profileData
-            stockService.saveStock(stock); // Ensure stock is persisted before adding it to PortfolioStock
+            // Ensure stock is persisted before adding it to PortfolioStock
+            if (stock != null) {
+                stockService.saveStock(stock); // Save the stock to the database
 
-            // Create a new PortfolioStock and add it to the portfolio
-            PortfolioStock portfolioStock = new PortfolioStock(stock, quantity, purchasePrice, purchaseDate);
-            portfolio.addPortfolioStock(portfolioStock);  // Add to the portfolio using the method in the Portfolio entity
+                // Create a new PortfolioStock and add it to the portfolio
+                PortfolioStock portfolioStock = new PortfolioStock(stock, quantity, purchasePrice, purchaseDate);
+                portfolio.addPortfolioStock(portfolioStock); // Add to the portfolio using the method in the Portfolio entity
 
-            // Save the updated portfolio with the new stock
-            portfolioRepository.save(portfolio);
+                // Save the updated portfolio with the new stock
+                portfolioRepository.save(portfolio);
 
-            return "Stock added to portfolio successfully.";
+                return "Stock added to portfolio successfully.";
+            } else {
+                return "Failed to retrieve stock summary.";
+            }
         });
+    }
+
+    // Utility method to parse Stock from the API response
+    private Stock parseStockFromResponse(String responseBody) {
+        try {
+            JsonNode root = new ObjectMapper().readTree(responseBody);
+            JsonNode priceNode = root.path("quoteSummary").path("result").get(0).path("price");
+
+            String symbol = priceNode.path("symbol").asText();
+            String companyName = priceNode.path("shortName").asText();
+            double currentPrice = priceNode.path("regularMarketPrice").path("raw").asDouble();
+            String currency = priceNode.path("currency").asText();
+
+            // Create and return a new Stock object directly
+            return new Stock(null, symbol, companyName, currentPrice, currency);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null; // Handle error appropriately
+        }
     }
 
     // Method to remove a stock from the portfolio
@@ -114,24 +141,27 @@ public class PortfolioService {
         return CompletableFuture.supplyAsync(() -> {
             List<Portfolio> portfolios = portfolioRepository.findByUserId(userId);
             return portfolios.isEmpty() ? new Portfolio(userId) : portfolios.get(0); // Return an empty portfolio if not found
-        }).thenApplyAsync(portfolio -> {
-            double totalPnL = 0;
-            double investedValue = 0;
+        }).thenComposeAsync(portfolio -> {
+            // List of futures to calculate PnL for each stock
+            List<CompletableFuture<Void>> pnlFutures = portfolio.getPortfolioStocks().stream()
+                    .map(portfolioStock -> {
+                        try {
+                            return calculatePnL(portfolioStock)
+                                    .thenAccept(pnl -> {
+                                        // Update the total PnL and invested value
+                                        portfolio.setTotalPnL(portfolio.getTotalPnL() + pnl);
+                                        portfolio.setInvestedValue(
+                                                portfolio.getInvestedValue() + (portfolioStock.getQuantity() * portfolioStock.getPurchasePrice())
+                                        );
+                                    });
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }).toList(); // Collect to a list of CompletableFuture<Void>
 
-            for (PortfolioStock portfolioStock : portfolio.getPortfolioStocks()) {
-                try {
-                    double pnl = calculatePnL(portfolioStock).join();  // Calculate PnL for each PortfolioStock
-                    totalPnL += pnl; // Accumulate total PnL
-                    investedValue += portfolioStock.getQuantity() * portfolioStock.getPurchasePrice(); // Total invested value
-                } catch (Exception e) {
-                    e.printStackTrace(); // Handle exception
-                }
-            }
-
-            // Set total PnL and invested value in the Portfolio model
-            portfolio.setTotalPnL(totalPnL); // Set total PnL
-            portfolio.setInvestedValue(investedValue); // Set total invested value
-            return portfolio;
+            // Combine all futures and return the portfolio when all PnL calculations are done
+            return CompletableFuture.allOf(pnlFutures.toArray(new CompletableFuture[0]))
+                    .thenApply(ignored -> portfolio);
         });
     }
 }

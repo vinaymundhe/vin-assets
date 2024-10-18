@@ -20,11 +20,6 @@ public class StockController {
     @Autowired
     private PortfolioService portfolioService;
 
-    @GetMapping("/profile/{symbol}")
-    public CompletableFuture<String> getStockProfile(@PathVariable String symbol) throws IOException {
-        return stockService.getStockProfile(symbol);
-    }
-
     // Method to get stock summary (price, volume, etc.)
     @GetMapping("/summary/{symbol}")
     public CompletableFuture<String> getStockSummary(@PathVariable String symbol) throws IOException {
