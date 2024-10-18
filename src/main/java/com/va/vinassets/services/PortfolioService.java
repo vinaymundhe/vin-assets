@@ -89,9 +89,13 @@ public class PortfolioService {
 
     // Method to calculate PnL (Profit & Loss) for a stock in the portfolio
     public CompletableFuture<Double> calculatePnL(PortfolioStock portfolioStock) throws IOException {
-        return stockService.getCurrentStockPrice(portfolioStock.getStock().getSymbol())
-                .thenApply(currentPrice -> (currentPrice - portfolioStock.getPurchasePrice()) * portfolioStock.getQuantity());
+        return stockService.getCurrentStockSummary(portfolioStock.getStock().getSymbol())
+                .thenApply(stockSummary -> {
+                    double regularMarketPrice = stockService.parseRegularMarketPrice(stockSummary);
+                    return (regularMarketPrice - portfolioStock.getPurchasePrice()) * portfolioStock.getQuantity();
+                });
     }
+
 
     // Method to find stock in portfolio by userId and stock symbol
     public Optional<PortfolioStock> findStockInPortfolio(String userId, String symbol) {

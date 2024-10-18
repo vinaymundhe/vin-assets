@@ -71,21 +71,20 @@ public class StockService {
 
     // Method 2: Fetch current stock price
     @Async("asyncExecutor")
-    public CompletableFuture<Double> getCurrentStockPrice(String symbol) throws IOException {
+    public CompletableFuture<String> getCurrentStockSummary(String symbol) throws IOException {
         AsyncHttpClient client = new DefaultAsyncHttpClient();
         String url = priceUrl + "?region=US&symbol=" + symbol;
 
-        CompletableFuture<Double> result = client.prepare("GET", url)
+        CompletableFuture<String> result = client.prepare("GET", url)
                 .setHeader("x-rapidapi-key", apiKey)
                 .setHeader("x-rapidapi-host", apiHostPrice)
                 .execute()
                 .toCompletableFuture()
                 .thenApply(response -> {
                     String responseBody = response.getResponseBody();
-                    double currentPrice = parseCurrentPriceFromResponse(responseBody);
-                    return currentPrice;
+                    return parseStockSummaryFromResponse(responseBody);
                 })
-                .exceptionally(ex -> 0.0);  // Return 0.0 in case of error
+                .exceptionally(ex -> "Error: " + ex.getMessage());
 
         result.whenComplete((res, ex) -> {
             try {
@@ -97,16 +96,47 @@ public class StockService {
         return result;
     }
 
-    // Utility method to parse the current stock price from the API response
-    private double parseCurrentPriceFromResponse(String responseBody) {
+    // Utility method to parse key fields from the API response
+    private String parseStockSummaryFromResponse(String responseBody) {
         try {
             JsonNode root = new ObjectMapper().readTree(responseBody);
-            return root.path("price").asDouble();
+            JsonNode priceNode = root.path("quoteSummary").path("result").get(0).path("price");
+
+            String symbol = priceNode.path("symbol").asText();
+            String companyName = priceNode.path("shortName").asText();
+            String exchangeName = priceNode.path("exchangeName").asText();
+            double currentPrice = priceNode.path("regularMarketPrice").path("raw").asDouble();
+            String currency = priceNode.path("currency").asText();
+            double priceChange = priceNode.path("regularMarketChange").path("raw").asDouble();
+            double priceChangePercent = priceNode.path("regularMarketChangePercent").path("raw").asDouble();
+            double dayHigh = priceNode.path("regularMarketDayHigh").path("raw").asDouble();
+            double dayLow = priceNode.path("regularMarketDayLow").path("raw").asDouble();
+            long marketVolume = priceNode.path("regularMarketVolume").path("raw").asLong();
+            double previousClose = priceNode.path("regularMarketPreviousClose").path("raw").asDouble();
+            double openPrice = priceNode.path("regularMarketOpen").path("raw").asDouble();
+            long marketCap = priceNode.path("marketCap").path("raw").asLong();
+
+            // Format the summary
+            return String.format("Symbol: %s\nCompany: %s\nExchange Name: %s\nCurrent Price: %.2f\nCurrency: %s\nChange: %.2f (%.2f%%)\nDay High: %.2f\nDay Low: %.2f\nVolume: %d\nPrevious Close: %.2f\nOpen: %.2f\nMarket Cap: %d",
+                    symbol, companyName, exchangeName, currentPrice, currency, priceChange, priceChangePercent, dayHigh, dayLow, marketVolume, previousClose, openPrice, marketCap);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error parsing stock data";
+        }
+    }
+
+    // Utility method to parse the regular market price from the stock summary JSON
+    public double parseRegularMarketPrice(String stockSummary) {
+        try {
+            JsonNode root = new ObjectMapper().readTree(stockSummary);
+            return root.path("quoteSummary").path("result").get(0).path("price").path("regularMarketPrice").path("raw").asDouble();
         } catch (Exception e) {
             e.printStackTrace();
             return 0.0;  // Return 0.0 in case of an error
         }
     }
+
 
     // Save stock in the repository
     public void saveStock(Stock stock) {

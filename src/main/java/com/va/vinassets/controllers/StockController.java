@@ -25,14 +25,15 @@ public class StockController {
         return stockService.getStockProfile(symbol);
     }
 
+    // Method to get stock summary (price, volume, etc.)
+    @GetMapping("/summary/{symbol}")
+    public CompletableFuture<String> getStockSummary(@PathVariable String symbol) throws IOException {
+        return stockService.getCurrentStockSummary(symbol);
+    }
+
 //    // New endpoint to get a user's portfolio (stocks + cryptos)
 //    @GetMapping("/portfolio/{userId}")
 //    public CompletableFuture<Portfolio> getPortfolio(@PathVariable String userId) {
 //        return portfolioService.getUserPortfolio(userId);
 //    }
-
-    @GetMapping("/price/{symbol}")
-    public CompletableFuture<Double> getCurrentStockPrice(@PathVariable String symbol) throws IOException {
-        return stockService.getCurrentStockPrice(symbol);
-    }
 }
