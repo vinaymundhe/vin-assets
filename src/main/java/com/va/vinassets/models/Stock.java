@@ -27,6 +27,9 @@ public class Stock {
         this.currency = currency;
     }
 
+    public Stock(String symbol) {
+    }
+
     // Getters and setters
     public Long getId() {
         return id;
