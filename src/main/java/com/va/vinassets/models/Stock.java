@@ -1,6 +1,7 @@
 package com.va.vinassets.models;
 
 import jakarta.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Stock {
@@ -11,15 +12,19 @@ public class Stock {
 
     private String symbol;  // Stock symbol (e.g., AAPL, MSFT)
 
-    // Add fields for the current stock summary instead of profile data
+    @Column(nullable = true)
     private String companyName;  // Current company name
-    private double currentPrice;  // Current stock price
+
+    @Column(name = "current_price", nullable = false)
+    private Double currentPrice;
+
+    @Column(nullable = true)
     private String currency;  // Currency of the stock
 
     public Stock() {
     }
 
-    public Stock(Long id, String symbol, String companyName, double currentPrice, String currency) {
+    public Stock(Long id, String symbol, String companyName, Double currentPrice, String currency) {
         this.id = id;
         this.symbol = symbol;
         this.companyName = companyName;
@@ -28,9 +33,9 @@ public class Stock {
     }
 
     public Stock(String symbol) {
+        this.symbol = symbol;
     }
 
-    // Getters and setters
     public Long getId() {
         return id;
     }
@@ -55,11 +60,14 @@ public class Stock {
         this.companyName = companyName;
     }
 
-    public double getCurrentPrice() {
+    public Double getCurrentPrice() {
         return currentPrice;
     }
 
-    public void setCurrentPrice(double currentPrice) {
+    public void setCurrentPrice(Double currentPrice) {
+        if (currentPrice < 0) {
+            throw new IllegalArgumentException("Current price cannot be negative");
+        }
         this.currentPrice = currentPrice;
     }
 
@@ -69,5 +77,29 @@ public class Stock {
 
     public void setCurrency(String currency) {
         this.currency = currency;
+    }
+
+    @Override
+    public String toString() {
+        return "Stock{" +
+                "id=" + id +
+                ", symbol='" + symbol + '\'' +
+                ", companyName='" + companyName + '\'' +
+                ", currentPrice=" + currentPrice +
+                ", currency='" + currency + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Stock stock = (Stock) o;
+        return Objects.equals(id, stock.id) && Objects.equals(symbol, stock.symbol);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, symbol);
     }
 }

@@ -13,8 +13,8 @@ public class PortfolioStock {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Foreign key to Stock entity
-    @ManyToOne
+    // Foreign key to Stock entity with cascade persist
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "stock_id")
     private Stock stock;
 

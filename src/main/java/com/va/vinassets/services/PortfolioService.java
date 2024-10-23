@@ -1,6 +1,7 @@
 package com.va.vinassets.services;
 
 import com.va.vinassets.dao.PortfolioRepository;
+import com.va.vinassets.dao.StockRepository;
 import com.va.vinassets.models.Portfolio;
 import com.va.vinassets.models.PortfolioStock;
 import com.va.vinassets.models.Stock;
@@ -16,6 +17,9 @@ public class PortfolioService {
 
     @Autowired
     private PortfolioRepository portfolioRepository;
+
+    @Autowired
+    private StockRepository stockRepository;
 
     // Method to add a stock to the portfolio
     public String addStockToPortfolio(String userId, String symbol, int quantity, double purchasePrice, LocalDate purchaseDate) {
@@ -43,7 +47,7 @@ public class PortfolioService {
         }
 
         // Create a new Stock object with the symbol
-        Stock stock = new Stock(symbol);
+        Stock stock = new Stock(symbol); // No need for extra info right now
 
         // Create a new PortfolioStock and add it to the portfolio
         PortfolioStock portfolioStock = new PortfolioStock(stock, quantity, purchasePrice, purchaseDate);
@@ -54,6 +58,7 @@ public class PortfolioService {
 
         return "Stock added to portfolio successfully.";
     }
+
 
     // Method to remove a stock from the portfolio
     public String removeStockFromPortfolio(String userId, String symbol) {
