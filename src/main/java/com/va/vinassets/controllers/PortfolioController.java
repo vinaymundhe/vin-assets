@@ -19,20 +19,18 @@ public class PortfolioController {
     @Autowired
     private PortfolioService portfolioService;
 
-    // Endpoint to add a stock to the portfolio (manually adding stock details)
     @PostMapping("/add")
     public ResponseEntity<String> addStockToPortfolio(
-            @RequestParam String userId,
             @RequestParam String symbol,
-            @RequestParam int quantity,
+            @RequestParam double quantity,
             @RequestParam double purchasePrice,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate purchaseDate) {
 
-        // Call service to add stock
-        String result = portfolioService.addStockToPortfolio(userId, symbol, quantity, purchasePrice, purchaseDate);
-        return new ResponseEntity<>(result, HttpStatus.OK); // Return the result directly
+        String result = portfolioService.addStockToPortfolio(symbol, quantity, purchasePrice, purchaseDate);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    /*
     // Endpoint to remove a stock from the portfolio
     @DeleteMapping("/remove")
     public ResponseEntity<String> removeStockFromPortfolio(
@@ -69,4 +67,6 @@ public class PortfolioController {
                 .map(portfolioStock -> ResponseEntity.ok("Stock found: " + portfolioStock.getStock().getSymbol()))
                 .orElse(ResponseEntity.notFound().build()); // Return 404 if the stock is not found
     }
+
+     */
 }
