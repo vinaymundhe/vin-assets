@@ -96,7 +96,6 @@ public class StockService {
         }
     }
 
-
     // Save stock in the repository
     public void saveStock(Stock stock) {
         stockRepository.save(stock);

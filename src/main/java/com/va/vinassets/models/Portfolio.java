@@ -18,7 +18,7 @@ public class Portfolio {
     @JsonManagedReference // Indicates that this is the parent in the relationship
     private List<PortfolioStock> portfolioStocks = new ArrayList<>();
 
-    private double totalPnL; // Total Profit & Loss
+    private double totalPnL;
     private double investedValue; // Total amount invested in the portfolio
 
     // Add PortfolioStock to portfolio
