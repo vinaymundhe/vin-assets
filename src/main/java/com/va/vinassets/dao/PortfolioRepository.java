@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface PortfolioRepository extends JpaRepository<Portfolio, String> {
-    List<Portfolio> findBySymbol(String symbol);
+    Portfolio findBySymbol(String symbol);
 }
 
 

@@ -1,13 +1,11 @@
 package com.va.vinassets.controllers;
 
-import com.va.vinassets.models.Portfolio;
 import com.va.vinassets.services.PortfolioService;
 import com.va.vinassets.services.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
