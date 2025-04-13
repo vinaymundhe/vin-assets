@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 
+/*
 @Entity
 @Table(name = "portfolio_stock")
 public class PortfolioStock {
@@ -87,3 +88,4 @@ public class PortfolioStock {
         this.portfolio = portfolio;
     }
 }
+*/

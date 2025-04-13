@@ -22,7 +22,6 @@ public class PortfolioService {
         Portfolio existingPortfolio = portfolioRepository.findBySymbol(symbol);
 
         if (existingPortfolio != null) {
-
             double previousQuantity = existingPortfolio.getQuantity();
             double previousPurchasePrice = existingPortfolio.getPurchasePrice();
 
