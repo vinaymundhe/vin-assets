@@ -9,7 +9,6 @@ import java.time.LocalDate;
 public class Portfolio {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String symbol;
     private double quantity;
     private double purchasePrice;
