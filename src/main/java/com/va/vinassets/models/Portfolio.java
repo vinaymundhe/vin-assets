@@ -14,7 +14,6 @@ public class Portfolio {
     private double purchasePrice;
     private LocalDate purchaseDate;
 
-
     public String getSymbol() {
         return symbol;
     }
@@ -45,5 +44,15 @@ public class Portfolio {
 
     public void setPurchaseDate(LocalDate purchaseDate) {
         this.purchaseDate = purchaseDate;
+    }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "symbol='" + symbol + '\'' +
+                ", quantity=" + quantity +
+                ", purchasePrice=" + purchasePrice +
+                ", purchaseDate=" + purchaseDate +
+                '}';
     }
 }

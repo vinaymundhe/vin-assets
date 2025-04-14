@@ -1,5 +1,6 @@
 package com.va.vinassets.controllers;
 
+import com.va.vinassets.models.Portfolio;
 import com.va.vinassets.services.PortfolioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -27,31 +28,20 @@ public class PortfolioController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    /*
-    // Endpoint to remove a stock from the portfolio
-    @DeleteMapping("/remove")
-    public ResponseEntity<String> removeStockFromPortfolio(
-            @RequestParam String userId,
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteStockFromPortfolio(
             @RequestParam String symbol) {
-
-        // Call service to remove the stock
-        String result = portfolioService.removeStockFromPortfolio(userId, symbol);
+        String result = portfolioService.deleteStockFromPortfolio(symbol);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    // Endpoint to get the user's portfolio and calculate total PnL
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<Portfolio> getUserPortfolio(
-            @PathVariable String userId,
-            @RequestParam List<Double> currentMarketPrices) {
-
-        // Fetch the portfolio and calculate PnL using the provided current market prices
-        Portfolio portfolio = portfolioService.getUserPortfolio(userId, currentMarketPrices);
-        if (portfolio.getPortfolioStocks().isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Return 404 if no stocks in the portfolio
-        }
-        return new ResponseEntity<>(portfolio, HttpStatus.OK); // Return 200 with the portfolio details
+    @GetMapping("/all")
+    public ResponseEntity<String> getCompletePortfolio() {
+        String result = portfolioService.getCompletePortfolio();
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+     /*
 
     // Endpoint to find a specific stock in the portfolio
     @GetMapping("/user/{userId}/stock/{symbol}")

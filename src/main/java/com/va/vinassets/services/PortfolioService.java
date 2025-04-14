@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class PortfolioService {
@@ -44,33 +46,30 @@ public class PortfolioService {
             portfolioRepository.save(newPortfolio);
             return "Added new stock to portfolio.";
         }
-
-/*
-    // Method to remove a stock from the portfolio
-    public String removeStockFromPortfolio(String userId, String symbol) {
-        // Find the user's portfolio
-        List<Portfolio> portfolios = portfolioRepository.findByUserId(userId);
-        if (portfolios.size() == 1) {
-            Portfolio portfolio = portfolios.get(0); // Use the existing portfolio
-
-            // Find the stock in the portfolio
-            Optional<PortfolioStock> stockToRemove = portfolio.getPortfolioStocks().stream()
-                    .filter(portfolioStock -> portfolioStock.getStock().getSymbol().equals(symbol))  // Match symbol
-                    .findFirst();
-
-            // If stock is found, remove it from the portfolio
-            if (stockToRemove.isPresent()) {
-                portfolio.removePortfolioStock(stockToRemove.get());
-                portfolioRepository.save(portfolio);  // Save the updated portfolio
-                return "Stock removed from portfolio.";
-            } else {
-                return "Stock not found in portfolio.";
-            }
-        }
-        return "Portfolio not found for the user.";
     }
 
-    // Method to calculate PnL (Profit & Loss) for a stock in the portfolio
+    public String deleteStockFromPortfolio(String symbol) {
+        Portfolio fetchStockToDelete = portfolioRepository.findBySymbol(symbol);
+            if (fetchStockToDelete != null) {
+                portfolioRepository.delete(fetchStockToDelete);
+            }
+        return "Deleted "+ fetchStockToDelete.getSymbol();
+    }
+
+    public String getCompletePortfolio() {
+        List<Portfolio> portfolioList = new ArrayList<>();
+        portfolioList = portfolioRepository.findAll();
+
+//        String result = null;
+//            for (Portfolio portfolioListStock : portfolioList) {
+//                result = portfolioListStock.toString();
+//            }
+        return portfolioList.toString();
+    }
+
+    /*
+
+    // Method to calculate PnL (Profit & Loss) for a  stock in the portfolio
     public double calculatePnL(PortfolioStock portfolioStock, double currentMarketPrice) {
         return (currentMarketPrice - portfolioStock.getPurchasePrice()) * portfolioStock.getQuantity();
     }
@@ -112,5 +111,4 @@ public class PortfolioService {
     }
 
  */
-    }
 }
