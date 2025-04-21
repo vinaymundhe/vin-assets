@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class PortfolioService {
@@ -18,6 +19,9 @@ public class PortfolioService {
 
     @Autowired
     private StockRepository stockRepository;
+
+    @Autowired
+    private StockService stockService;
 
     public String addStockToPortfolio(String symbol, double quantity, double purchasePrice, LocalDate purchaseDate) {
 
@@ -57,22 +61,33 @@ public class PortfolioService {
     }
 
     public String getCompletePortfolio() {
-        List<Portfolio> portfolioList = new ArrayList<>();
-        portfolioList = portfolioRepository.findAll();
+            List<Portfolio> portfolioList = new ArrayList<>();
+            portfolioList = portfolioRepository.findAll();
+            getCompletePnL();
 
-//        String result = null;
-//            for (Portfolio portfolioListStock : portfolioList) {
-//                result = portfolioListStock.toString();
-//            }
         return portfolioList.toString();
     }
 
-    /*
+    public List<Portfolio> getCompletePnL() {
+        List<Portfolio> portfolioList = portfolioRepository.findAll();
 
-    // Method to calculate PnL (Profit & Loss) for a  stock in the portfolio
-    public double calculatePnL(PortfolioStock portfolioStock, double currentMarketPrice) {
-        return (currentMarketPrice - portfolioStock.getPurchasePrice()) * portfolioStock.getQuantity();
+        for (Portfolio p : portfolioList) {
+            double qty = p.getQuantity();
+            double buyprice = p.getPurchasePrice();
+            double purchaseValue = qty * buyprice;
+            String symbol = p.getSymbol();
+
+            CompletableFuture<Double> priceFuture = stockService.getCurrentStockPrice(symbol);
+            double currentMarketPrice = priceFuture.join();
+            double currentValue = currentMarketPrice * qty;
+            double pnL = currentValue - purchaseValue;
+
+            p.setPnL(pnL);
+        }
+        return portfolioList;
     }
+
+    /*
 
     // Method to find stock in portfolio by userId and stock symbol
     public Optional<PortfolioStock> findStockInPortfolio(String userId, String symbol) {

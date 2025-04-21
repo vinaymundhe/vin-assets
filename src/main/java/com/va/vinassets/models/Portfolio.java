@@ -13,6 +13,15 @@ public class Portfolio {
     private double quantity;
     private double purchasePrice;
     private LocalDate purchaseDate;
+    private double pnL;
+
+    public double getPnL() {
+        return pnL;
+    }
+
+    public void setPnL(double pnL) {
+        this.pnL = pnL;
+    }
 
     public String getSymbol() {
         return symbol;
@@ -53,6 +62,7 @@ public class Portfolio {
                 ", quantity=" + quantity +
                 ", purchasePrice=" + purchasePrice +
                 ", purchaseDate=" + purchaseDate +
+                ", profitAndLoss=" + pnL +
                 '}';
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -94,6 +95,39 @@ public class StockService {
             e.printStackTrace();
             return 0.0;  // Return 0.0 in case of an error
         }
+    }
+
+    @Async("asyncExecutor")
+    public CompletableFuture<Double> getCurrentStockPrice(String symbol) {
+        AsyncHttpClient client = new DefaultAsyncHttpClient();
+        String url = priceUrl + "?region=US&symbol=" + symbol;
+
+        CompletableFuture<Double> priceFuture = client
+                .prepare("GET", url)
+                .setHeader("x-rapidapi-key", apiKey)
+                .setHeader("x-rapidapi-host", apiHostPrice)
+                .execute()
+                .toCompletableFuture()
+                .thenApply(response -> {
+                    try {
+                        JsonNode priceNode = new ObjectMapper()
+                                .readTree(response.getResponseBody())
+                                .path("quoteSummary").path("result").get(0).path("price");
+
+                        return priceNode
+                                .path("regularMarketPrice")
+                                .path("raw")
+                                .asDouble();
+                    } catch (Exception e) {
+                        throw new CompletionException(e);
+                    }
+                })
+                .whenComplete((result, error) -> {
+                    try { client.close(); }
+                    catch (IOException ignored) {}
+                });
+
+        return priceFuture;
     }
 
     // Save stock in the repository
