@@ -73,8 +73,8 @@ public class PortfolioService {
 
         for (Portfolio p : portfolioList) {
             double qty = p.getQuantity();
-            double buyprice = p.getPurchasePrice();
-            double purchaseValue = qty * buyprice;
+            double buyPrice = p.getPurchasePrice();
+            double purchaseValue = qty * buyPrice;
             String symbol = p.getSymbol();
 
             CompletableFuture<Double> priceFuture = stockService.getCurrentStockPrice(symbol);
