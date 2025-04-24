@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -24,7 +23,6 @@ public class PortfolioService {
     private StockService stockService;
 
     public String addStockToPortfolio(String symbol, double quantity, double purchasePrice, LocalDate purchaseDate) {
-
         Portfolio existingPortfolio = portfolioRepository.findBySymbol(symbol);
 
         if (existingPortfolio != null) {
@@ -61,16 +59,13 @@ public class PortfolioService {
     }
 
     public String getCompletePortfolio() {
-            List<Portfolio> portfolioList = new ArrayList<>();
-            portfolioList = portfolioRepository.findAll();
-            getCompletePnL();
+        List<Portfolio> portfolioList = portfolioRepository.findAll();
+        getCompletePnL(portfolioList);
 
         return portfolioList.toString();
     }
 
-    public List<Portfolio> getCompletePnL() {
-        List<Portfolio> portfolioList = portfolioRepository.findAll();
-
+    public List<Portfolio> getCompletePnL(List<Portfolio> portfolioList) {
         for (Portfolio p : portfolioList) {
             double qty = p.getQuantity();
             double buyPrice = p.getPurchasePrice();
