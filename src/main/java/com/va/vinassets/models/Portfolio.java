@@ -12,16 +12,9 @@ public class Portfolio {
     private String symbol;
     private double quantity;
     private double purchasePrice;
+    private double currentPrice;
     private LocalDate purchaseDate;
-    private double pnL;
-
-    public double getPnL() {
-        return pnL;
-    }
-
-    public void setPnL(double pnL) {
-        this.pnL = pnL;
-    }
+    private double profitAndLoss;
 
     public String getSymbol() {
         return symbol;
@@ -55,14 +48,19 @@ public class Portfolio {
         this.purchaseDate = purchaseDate;
     }
 
-    @Override
-    public String toString() {
-        return "{" +
-                "symbol='" + symbol + '\'' +
-                ", quantity=" + quantity +
-                ", purchasePrice=" + purchasePrice +
-                ", purchaseDate=" + purchaseDate +
-                ", profitAndLoss=" + pnL +
-                '}';
+    public double getCurrentPrice() {
+        return currentPrice;
+    }
+
+    public void setCurrentPrice(double currentPrice) {
+        this.currentPrice = currentPrice;
+    }
+
+    public double getProfitAndLoss() {
+        return profitAndLoss;
+    }
+
+    public void setProfitAndLoss(double profitAndLoss) {
+        this.profitAndLoss = profitAndLoss;
     }
 }

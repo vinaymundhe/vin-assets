@@ -1,6 +1,5 @@
-package com.va.vinassets.controllers;
+package com.va.vinassets.exceptions;
 
-import com.va.vinassets.exceptions.StockNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

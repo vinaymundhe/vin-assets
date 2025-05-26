@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/portfolio")
@@ -36,8 +37,8 @@ public class PortfolioController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<String> getCompletePortfolio() {
-        String result = portfolioService.getCompletePortfolio();
+    public ResponseEntity<List<Portfolio>> getCompletePortfolio() {
+        List<Portfolio> result = portfolioService.getCompletePortfolio();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

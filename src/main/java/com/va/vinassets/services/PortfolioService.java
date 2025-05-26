@@ -1,7 +1,6 @@
 package com.va.vinassets.services;
 
 import com.va.vinassets.dao.PortfolioRepository;
-import com.va.vinassets.dao.StockRepository;
 import com.va.vinassets.models.Portfolio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,9 +14,6 @@ public class PortfolioService {
 
     @Autowired
     private PortfolioRepository portfolioRepository;
-
-    @Autowired
-    private StockRepository stockRepository;
 
     @Autowired
     private StockService stockService;
@@ -58,28 +54,28 @@ public class PortfolioService {
         return "Deleted "+ fetchStockToDelete.getSymbol();
     }
 
-    public String getCompletePortfolio() {
+    public List<Portfolio> getCompletePortfolio() {
         List<Portfolio> portfolioList = portfolioRepository.findAll();
         getCompletePnL(portfolioList);
 
-        return portfolioList.toString();
+        return portfolioList;
     }
 
-    public List<Portfolio> getCompletePnL(List<Portfolio> portfolioList) {
-        for (Portfolio p : portfolioList) {
-            double qty = p.getQuantity();
-            double buyPrice = p.getPurchasePrice();
+    private void getCompletePnL(List<Portfolio> portfolioList) {
+        for (Portfolio stock : portfolioList) {
+            double qty = stock.getQuantity();
+            double buyPrice = stock.getPurchasePrice();
             double purchaseValue = qty * buyPrice;
-            String symbol = p.getSymbol();
+            String symbol = stock.getSymbol();
 
             CompletableFuture<Double> priceFuture = stockService.getCurrentStockPrice(symbol);
             double currentMarketPrice = priceFuture.join();
             double currentValue = currentMarketPrice * qty;
             double pnL = currentValue - purchaseValue;
 
-            p.setPnL(pnL);
+            stock.setCurrentPrice(currentMarketPrice);
+            stock.setProfitAndLoss(pnL);
         }
-        return portfolioList;
     }
 
     /*
