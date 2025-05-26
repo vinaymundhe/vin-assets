@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -56,25 +57,52 @@ public class PortfolioService {
 
     public List<Portfolio> getCompletePortfolio() {
         List<Portfolio> portfolioList = portfolioRepository.findAll();
-        getCompletePnL(portfolioList);
+        Portfolio stock = new Portfolio();
+        getCompletePnL(portfolioList, stock);
 
         return portfolioList;
     }
 
-    private void getCompletePnL(List<Portfolio> portfolioList) {
-        for (Portfolio stock : portfolioList) {
-            double qty = stock.getQuantity();
-            double buyPrice = stock.getPurchasePrice();
+    public Portfolio getStockBreakdown(String symbol){
+        Portfolio stockBreakdown = portfolioRepository.findBySymbol(symbol);
+        List<Portfolio> portfolioList = new ArrayList<>();
+        getCompletePnL(portfolioList, stockBreakdown);
+
+        return stockBreakdown;
+    }
+
+    private void getCompletePnL(List<Portfolio> portfolioList, Portfolio stockBreakdown) {
+
+        if (!portfolioList.isEmpty()) {
+            for (Portfolio stock : portfolioList) {
+                double qty = stock.getQuantity();
+                double buyPrice = stock.getPurchasePrice();
+                double purchaseValue = qty * buyPrice;
+                String symbol = stock.getSymbol();
+
+                CompletableFuture<Double> priceFuture = stockService.getCurrentStockPrice(symbol);
+                double currentMarketPrice = priceFuture.join();
+                double currentValue = currentMarketPrice * qty;
+                double pnL = currentValue - purchaseValue;
+
+                stock.setCurrentPrice(currentMarketPrice);
+                stock.setProfitAndLoss(pnL);
+            }
+        }
+
+        if (stockBreakdown != null) {
+            double qty = stockBreakdown.getQuantity();
+            double buyPrice = stockBreakdown.getPurchasePrice();
             double purchaseValue = qty * buyPrice;
-            String symbol = stock.getSymbol();
+            String symbol = stockBreakdown.getSymbol();
 
             CompletableFuture<Double> priceFuture = stockService.getCurrentStockPrice(symbol);
             double currentMarketPrice = priceFuture.join();
             double currentValue = currentMarketPrice * qty;
             double pnL = currentValue - purchaseValue;
 
-            stock.setCurrentPrice(currentMarketPrice);
-            stock.setProfitAndLoss(pnL);
+            stockBreakdown.setCurrentPrice(currentMarketPrice);
+            stockBreakdown.setProfitAndLoss(pnL);
         }
     }
 

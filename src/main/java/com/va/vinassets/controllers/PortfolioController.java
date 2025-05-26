@@ -42,6 +42,12 @@ public class PortfolioController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @GetMapping("/stock")
+    public ResponseEntity<Portfolio> getStockBreakdown(
+            @RequestParam String symbol){
+        Portfolio result = portfolioService.getStockBreakdown(symbol);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
      /*
 
     // Endpoint to find a specific stock in the portfolio
