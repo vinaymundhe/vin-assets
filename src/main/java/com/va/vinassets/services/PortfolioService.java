@@ -57,23 +57,21 @@ public class PortfolioService {
 
     public List<Portfolio> getCompletePortfolio() {
         List<Portfolio> portfolioList = portfolioRepository.findAll();
-        Portfolio stock = new Portfolio();
-        getCompletePnL(portfolioList, stock);
+        getCompletePnL(portfolioList, null);
 
         return portfolioList;
     }
 
     public Portfolio getStockBreakdown(String symbol){
         Portfolio stockBreakdown = portfolioRepository.findBySymbol(symbol);
-        List<Portfolio> portfolioList = new ArrayList<>();
-        getCompletePnL(portfolioList, stockBreakdown);
+        getCompletePnL(null, stockBreakdown);
 
         return stockBreakdown;
     }
 
     private void getCompletePnL(List<Portfolio> portfolioList, Portfolio stockBreakdown) {
 
-        if (!portfolioList.isEmpty()) {
+        if (portfolioList != null && !portfolioList.isEmpty()) {
             for (Portfolio stock : portfolioList) {
                 double qty = stock.getQuantity();
                 double buyPrice = stock.getPurchasePrice();
