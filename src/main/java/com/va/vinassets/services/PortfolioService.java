@@ -1,11 +1,13 @@
 package com.va.vinassets.services;
 
 import com.va.vinassets.dao.PortfolioRepository;
+import com.va.vinassets.models.Breakdown;
 import com.va.vinassets.models.Portfolio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -31,18 +33,18 @@ public class PortfolioService {
 
             existingPortfolio.setQuantity(newTotalQuantity);
             existingPortfolio.setPurchasePrice(weightedAvgPrice);
-            existingPortfolio.setPurchaseDate(purchaseDate);
 
             portfolioRepository.save(existingPortfolio);
+            addTransactionToBreakdown(symbol, quantity, purchasePrice, purchaseDate);
             return "Updated existing stock in portfolio.";
         } else {
             Portfolio newPortfolio = new Portfolio();
             newPortfolio.setSymbol(symbol);
             newPortfolio.setQuantity(quantity);
             newPortfolio.setPurchasePrice(purchasePrice);
-            newPortfolio.setPurchaseDate(purchaseDate);
 
             portfolioRepository.save(newPortfolio);
+            addTransactionToBreakdown(symbol, quantity, purchasePrice, purchaseDate);
             return "Added new stock to portfolio.";
         }
     }
@@ -102,6 +104,29 @@ public class PortfolioService {
             stockBreakdown.setCurrentPrice(currentMarketPrice);
             stockBreakdown.setProfitAndLoss(pnL);
         }
+    }
+
+    private void addTransactionToBreakdown(String symbol, double quantity, double purchasePrice, LocalDate purchaseDate) {
+        Breakdown breakdown = new Breakdown();
+        breakdown.setQuantity(quantity);
+        breakdown.setPrice(purchasePrice);
+        breakdown.setTransactionDate(purchaseDate);
+
+        if (purchaseDate == null) {
+            throw new IllegalArgumentException("Purchase date cannot be null");
+        }
+
+        LocalDate today = LocalDate.now();
+        breakdown.setDaysFromTransaction(ChronoUnit.DAYS.between(purchaseDate, today));
+
+        CompletableFuture<Double> priceFuture = stockService.getCurrentStockPrice(symbol);
+        double currentMarketPrice = priceFuture.join();
+        double currentValue = currentMarketPrice * quantity;
+        double pnL = currentValue - purchasePrice;
+        breakdown.setPnLSinceBuyPrice(pnL);
+
+        List<Breakdown> breakdownList = new ArrayList<>();
+        breakdownList.add(breakdown);
     }
 
     /*

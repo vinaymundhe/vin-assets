@@ -2,7 +2,7 @@ package com.va.vinassets.models;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "portfolio")
@@ -13,8 +13,8 @@ public class Portfolio {
     private double quantity;
     private double purchasePrice;
     private double currentPrice;
-    private LocalDate purchaseDate;
     private double profitAndLoss;
+    private List<Breakdown> breakdown;
 
     public String getSymbol() {
         return symbol;
@@ -38,14 +38,6 @@ public class Portfolio {
 
     public void setPurchasePrice(double purchasePrice) {
         this.purchasePrice = purchasePrice;
-    }
-
-    public LocalDate getPurchaseDate() {
-        return purchaseDate;
-    }
-
-    public void setPurchaseDate(LocalDate purchaseDate) {
-        this.purchaseDate = purchaseDate;
     }
 
     public double getCurrentPrice() {

@@ -5,7 +5,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 public class CryptoService {
-    private final String COIN_API = "https://api.coingecko.com/api/v3/simple/price?ids={coinId}&vs_currencies=usd";
+    private final String COIN_API = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/map";
 
     public String getCryptoPrice(String coinId) {
         RestTemplate restTemplate = new RestTemplate();
