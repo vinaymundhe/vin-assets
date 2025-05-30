@@ -34,8 +34,9 @@ public class PortfolioService {
             existingPortfolio.setQuantity(newTotalQuantity);
             existingPortfolio.setPurchasePrice(weightedAvgPrice);
 
+            addTransactionToBreakdown(existingPortfolio, symbol, quantity, purchasePrice, purchaseDate);
             portfolioRepository.save(existingPortfolio);
-            addTransactionToBreakdown(symbol, quantity, purchasePrice, purchaseDate);
+
             return "Updated existing stock in portfolio.";
         } else {
             Portfolio newPortfolio = new Portfolio();
@@ -43,8 +44,9 @@ public class PortfolioService {
             newPortfolio.setQuantity(quantity);
             newPortfolio.setPurchasePrice(purchasePrice);
 
+            addTransactionToBreakdown(newPortfolio, symbol, quantity, purchasePrice, purchaseDate);
             portfolioRepository.save(newPortfolio);
-            addTransactionToBreakdown(symbol, quantity, purchasePrice, purchaseDate);
+
             return "Added new stock to portfolio.";
         }
     }
@@ -106,7 +108,7 @@ public class PortfolioService {
         }
     }
 
-    private void addTransactionToBreakdown(String symbol, double quantity, double purchasePrice, LocalDate purchaseDate) {
+    private void addTransactionToBreakdown(Portfolio portfolio, String symbol, double quantity, double purchasePrice, LocalDate purchaseDate) {
         Breakdown breakdown = new Breakdown();
         breakdown.setQuantity(quantity);
         breakdown.setPrice(purchasePrice);
@@ -127,6 +129,7 @@ public class PortfolioService {
 
         List<Breakdown> breakdownList = new ArrayList<>();
         breakdownList.add(breakdown);
+        portfolio.setBreakdownList(breakdownList);
     }
 
     /*

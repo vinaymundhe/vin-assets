@@ -14,7 +14,7 @@ public class Portfolio {
     private double purchasePrice;
     private double currentPrice;
     private double profitAndLoss;
-    private List<Breakdown> breakdown;
+    private List<Breakdown> breakdownList;
 
     public String getSymbol() {
         return symbol;
@@ -54,5 +54,13 @@ public class Portfolio {
 
     public void setProfitAndLoss(double profitAndLoss) {
         this.profitAndLoss = profitAndLoss;
+    }
+
+    public List<Breakdown> getBreakdownList() {
+        return breakdownList;
+    }
+
+    public void setBreakdownList(List<Breakdown> breakdownList) {
+        this.breakdownList = breakdownList;
     }
 }
