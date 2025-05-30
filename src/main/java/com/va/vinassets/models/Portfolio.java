@@ -14,6 +14,7 @@ public class Portfolio {
     private double purchasePrice;
     private double currentPrice;
     private double profitAndLoss;
+    @ElementCollection
     private List<Breakdown> breakdownList;
 
     public String getSymbol() {

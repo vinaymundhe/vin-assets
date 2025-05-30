@@ -1,7 +1,10 @@
 package com.va.vinassets.models;
 
+import jakarta.persistence.Embeddable;
+
 import java.time.LocalDate;
 
+@Embeddable
 public class Breakdown {
 
     private LocalDate transactionDate;
