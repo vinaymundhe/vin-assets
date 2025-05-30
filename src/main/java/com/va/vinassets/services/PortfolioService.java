@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -124,12 +123,11 @@ public class PortfolioService {
         CompletableFuture<Double> priceFuture = stockService.getCurrentStockPrice(symbol);
         double currentMarketPrice = priceFuture.join();
         double currentValue = currentMarketPrice * quantity;
-        double pnL = currentValue - purchasePrice;
+        double purchaseValue = quantity * purchasePrice;
+        double pnL = currentValue - purchaseValue;
         breakdown.setPnLSinceBuyPrice(pnL);
 
-        List<Breakdown> breakdownList = new ArrayList<>();
-        breakdownList.add(breakdown);
-        portfolio.setBreakdownList(breakdownList);
+        portfolio.getBreakdownList().add(breakdown);
     }
 
     /*
