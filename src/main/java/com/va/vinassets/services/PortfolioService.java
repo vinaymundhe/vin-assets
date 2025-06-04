@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -127,6 +128,10 @@ public class PortfolioService {
         double pnL = currentValue - purchaseValue;
         breakdown.setPnLSinceBuyPrice(pnL);
 
+        if (portfolio.getBreakdownList() == null){
+            List<Breakdown> breakdownList = new ArrayList<>();
+            portfolio.setBreakdownList(breakdownList);
+        }
         portfolio.getBreakdownList().add(breakdown);
     }
 
