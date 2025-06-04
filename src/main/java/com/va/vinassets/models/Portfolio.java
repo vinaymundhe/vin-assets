@@ -11,7 +11,7 @@ public class Portfolio {
     @Id
     private String symbol;
     private double quantity;
-    private double purchasePrice;
+    private double averagePrice;
     private double currentPrice;
     private double profitAndLoss;
     @ElementCollection
@@ -33,12 +33,12 @@ public class Portfolio {
         this.quantity = quantity;
     }
 
-    public double getPurchasePrice() {
-        return purchasePrice;
+    public double getAveragePrice() {
+        return averagePrice;
     }
 
-    public void setPurchasePrice(double purchasePrice) {
-        this.purchasePrice = purchasePrice;
+    public void setAveragePrice(double averagePrice) {
+        this.averagePrice = averagePrice;
     }
 
     public double getCurrentPrice() {

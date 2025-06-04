@@ -26,13 +26,13 @@ public class PortfolioService {
 
         if (existingPortfolio != null) {
             double previousQuantity = existingPortfolio.getQuantity();
-            double previousPurchasePrice = existingPortfolio.getPurchasePrice();
+            double previousAvgPrice = existingPortfolio.getAveragePrice();
 
             double newTotalQuantity = previousQuantity + quantity;
-            double weightedAvgPrice = ((previousPurchasePrice * previousQuantity) + (purchasePrice * quantity)) / newTotalQuantity;
+            double weightedAvgPrice = ((previousAvgPrice * previousQuantity) + (purchasePrice * quantity)) / newTotalQuantity;
 
             existingPortfolio.setQuantity(newTotalQuantity);
-            existingPortfolio.setPurchasePrice(weightedAvgPrice);
+            existingPortfolio.setAveragePrice(weightedAvgPrice);
 
             addTransactionToBreakdown(existingPortfolio, symbol, quantity, purchasePrice, purchaseDate);
             portfolioRepository.save(existingPortfolio);
@@ -42,7 +42,7 @@ public class PortfolioService {
             Portfolio newPortfolio = new Portfolio();
             newPortfolio.setSymbol(symbol);
             newPortfolio.setQuantity(quantity);
-            newPortfolio.setPurchasePrice(purchasePrice);
+            newPortfolio.setAveragePrice(purchasePrice);
 
             addTransactionToBreakdown(newPortfolio, symbol, quantity, purchasePrice, purchaseDate);
             portfolioRepository.save(newPortfolio);
@@ -78,7 +78,7 @@ public class PortfolioService {
         if (portfolioList != null && !portfolioList.isEmpty()) {
             for (Portfolio stock : portfolioList) {
                 double qty = stock.getQuantity();
-                double buyPrice = stock.getPurchasePrice();
+                double buyPrice = stock.getAveragePrice();
                 double purchaseValue = qty * buyPrice;
                 String symbol = stock.getSymbol();
 
@@ -94,7 +94,7 @@ public class PortfolioService {
 
         if (stockBreakdown != null) {
             double qty = stockBreakdown.getQuantity();
-            double buyPrice = stockBreakdown.getPurchasePrice();
+            double buyPrice = stockBreakdown.getAveragePrice();
             double purchaseValue = qty * buyPrice;
             String symbol = stockBreakdown.getSymbol();
 

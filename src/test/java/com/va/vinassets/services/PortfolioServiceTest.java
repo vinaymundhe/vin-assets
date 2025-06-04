@@ -34,7 +34,7 @@ class PortfolioServiceTest {
         Portfolio p = new Portfolio();
         p.setSymbol(symbol);
         p.setQuantity(qty);
-        p.setPurchasePrice(price);
+        p.setAveragePrice(price);
         p.setBreakdownList(new ArrayList<>());
         return p;
     }
@@ -58,7 +58,7 @@ class PortfolioServiceTest {
         assertEquals("Added new stock to portfolio.", result);
         assertEquals(symbol, savedPortfolio.getSymbol());
         assertEquals(qty, savedPortfolio.getQuantity());
-        assertEquals(price, savedPortfolio.getPurchasePrice());
+        assertEquals(price, savedPortfolio.getAveragePrice());
         assertEquals(1, savedPortfolio.getBreakdownList().size());
         assertEquals(20.0, savedPortfolio.getBreakdownList().get(0).getPnLSinceBuyPrice());
     }
@@ -81,7 +81,7 @@ class PortfolioServiceTest {
 
         // Weighted avg price calculation
         double weightedAvg = ((prevPrice * prevQty) + (newPrice * addQty)) / (prevQty + addQty);
-        assertEquals(weightedAvg, existing.getPurchasePrice());
+        assertEquals(weightedAvg, existing.getAveragePrice());
 
         verify(portfolioRepository).save(existing);
         assertFalse(existing.getBreakdownList().isEmpty());
@@ -141,7 +141,7 @@ class PortfolioServiceTest {
         for (Portfolio p : result) {
             assertEquals(30.0, p.getCurrentPrice());
             // Calculate expected profit and loss
-            double expectedPnl = (30.0 * p.getQuantity()) - (p.getPurchasePrice() * p.getQuantity());
+            double expectedPnl = (30.0 * p.getQuantity()) - (p.getAveragePrice() * p.getQuantity());
             assertEquals(expectedPnl, p.getProfitAndLoss());
         }
     }
@@ -158,7 +158,5 @@ class PortfolioServiceTest {
         assertEquals(120.0, result.getCurrentPrice());
         assertEquals(60.0, result.getProfitAndLoss()); // (120*3) - (100*3)
     }
-
-    // -- You can write more tests for private/protected logic if you refactor for testability (e.g., package-private)
 
 }
