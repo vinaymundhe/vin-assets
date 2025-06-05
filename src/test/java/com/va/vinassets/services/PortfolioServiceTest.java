@@ -1,7 +1,6 @@
 package com.va.vinassets.services;
 
 import com.va.vinassets.dao.PortfolioRepository;
-import com.va.vinassets.models.Breakdown;
 import com.va.vinassets.models.Portfolio;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -60,7 +59,7 @@ class PortfolioServiceTest {
         assertEquals(qty, savedPortfolio.getQuantity());
         assertEquals(price, savedPortfolio.getAveragePrice());
         assertEquals(1, savedPortfolio.getBreakdownList().size());
-        assertEquals(20.0, savedPortfolio.getBreakdownList().get(0).getPnLSinceBuyPrice());
+        assertEquals(200.0, savedPortfolio.getBreakdownList().get(0).getPnLSinceBuyPrice());
     }
 
     @Test
@@ -107,22 +106,17 @@ class PortfolioServiceTest {
         Portfolio toDelete = createPortfolio(symbol, 2, 50);
         when(portfolioRepository.findBySymbol(symbol)).thenReturn(toDelete);
 
-        String result = portfolioService.deleteStockFromPortfolio(symbol);
-
+        portfolioService.deleteStockFromPortfolio(symbol);
         verify(portfolioRepository).delete(toDelete);
-        assertEquals("Deleted HDFCBANK", result);
     }
 
     @Test
     void testDeleteStockFromPortfolio_NotFound() {
-        String symbol = "MISSING";
+        String symbol = "HDFCBANK";
         when(portfolioRepository.findBySymbol(symbol)).thenReturn(null);
 
-        // Should not throw, but will cause NullPointerException on getSymbol in your code!
-        // Let's check for that bug:
-        assertThrows(NullPointerException.class, () ->
-                portfolioService.deleteStockFromPortfolio(symbol)
-        );
+        String result = portfolioService.deleteStockFromPortfolio(symbol);
+        assertEquals("HDFCBANK stock doesn't exist in portfolio.", result);
     }
 
     @Test

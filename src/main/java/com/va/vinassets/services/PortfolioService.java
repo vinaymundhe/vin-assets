@@ -53,10 +53,14 @@ public class PortfolioService {
 
     public String deleteStockFromPortfolio(String symbol) {
         Portfolio fetchStockToDelete = portfolioRepository.findBySymbol(symbol);
-            if (fetchStockToDelete != null) {
-                portfolioRepository.delete(fetchStockToDelete);
-            }
-        return "Deleted "+ fetchStockToDelete.getSymbol();
+        String result;
+        if (fetchStockToDelete != null) {
+            portfolioRepository.delete(fetchStockToDelete);
+            result = "Deleted " + fetchStockToDelete.getSymbol();
+        } else {
+            result = symbol + " stock doesn't exist in portfolio.";
+        }
+        return result;
     }
 
     public List<Portfolio> getCompletePortfolio() {
