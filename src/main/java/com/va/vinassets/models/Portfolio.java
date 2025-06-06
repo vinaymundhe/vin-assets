@@ -13,6 +13,8 @@ public class Portfolio {
     private double quantity;
     private double averagePrice;
     private double currentPrice;
+    private double invested;
+    private double currentValue;
     private double profitAndLoss;
     @ElementCollection
     private List<Breakdown> breakdownList;
@@ -63,5 +65,21 @@ public class Portfolio {
 
     public void setBreakdownList(List<Breakdown> breakdownList) {
         this.breakdownList = breakdownList;
+    }
+
+    public double getInvested() {
+        return invested;
+    }
+
+    public void setInvested(double invested) {
+        this.invested = invested;
+    }
+
+    public double getCurrentValue() {
+        return currentValue;
+    }
+
+    public void setCurrentValue(double currentValue) {
+        this.currentValue = currentValue;
     }
 }

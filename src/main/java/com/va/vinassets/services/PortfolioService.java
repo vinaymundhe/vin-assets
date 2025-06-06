@@ -23,16 +23,18 @@ public class PortfolioService {
 
     public String addStockToPortfolio(String symbol, double quantity, double purchasePrice, LocalDate purchaseDate) {
         Portfolio existingPortfolio = portfolioRepository.findBySymbol(symbol);
-
+        double invested = 0;
         if (existingPortfolio != null) {
             double previousQuantity = existingPortfolio.getQuantity();
             double previousAvgPrice = existingPortfolio.getAveragePrice();
 
+            invested = existingPortfolio.getInvested() + (quantity * purchasePrice);
             double newTotalQuantity = previousQuantity + quantity;
             double weightedAvgPrice = ((previousAvgPrice * previousQuantity) + (purchasePrice * quantity)) / newTotalQuantity;
 
             existingPortfolio.setQuantity(newTotalQuantity);
             existingPortfolio.setAveragePrice(weightedAvgPrice);
+            existingPortfolio.setInvested(invested);
 
             addTransactionToBreakdown(existingPortfolio, symbol, quantity, purchasePrice, purchaseDate);
             portfolioRepository.save(existingPortfolio);
@@ -40,9 +42,13 @@ public class PortfolioService {
             return "Updated existing stock in portfolio.";
         } else {
             Portfolio newPortfolio = new Portfolio();
+
+            invested = quantity * purchasePrice;
+
             newPortfolio.setSymbol(symbol);
             newPortfolio.setQuantity(quantity);
             newPortfolio.setAveragePrice(purchasePrice);
+            newPortfolio.setInvested(invested);
 
             addTransactionToBreakdown(newPortfolio, symbol, quantity, purchasePrice, purchaseDate);
             portfolioRepository.save(newPortfolio);
@@ -91,6 +97,7 @@ public class PortfolioService {
                 double currentValue = currentMarketPrice * qty;
                 double pnL = currentValue - purchaseValue;
 
+                stock.setCurrentValue(currentValue);
                 stock.setCurrentPrice(currentMarketPrice);
                 stock.setProfitAndLoss(pnL);
             }
@@ -107,6 +114,7 @@ public class PortfolioService {
             double currentValue = currentMarketPrice * qty;
             double pnL = currentValue - purchaseValue;
 
+            stockBreakdown.setCurrentValue(currentValue);
             stockBreakdown.setCurrentPrice(currentMarketPrice);
             stockBreakdown.setProfitAndLoss(pnL);
         }
