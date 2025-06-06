@@ -106,8 +106,9 @@ class PortfolioServiceTest {
         Portfolio toDelete = createPortfolio(symbol, 2, 50);
         when(portfolioRepository.findBySymbol(symbol)).thenReturn(toDelete);
 
-        portfolioService.deleteStockFromPortfolio(symbol);
+        String result = portfolioService.deleteStockFromPortfolio(symbol);
         verify(portfolioRepository).delete(toDelete);
+        assertEquals("Deleted HDFCBANK", result);
     }
 
     @Test
