@@ -5,6 +5,8 @@ import com.va.vinassets.models.UserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserDetailsService {
 
@@ -14,15 +16,22 @@ public class UserDetailsService {
     public String addUserDetails(String email, String phoneNumber, String firstName, String middleName, String lastName) {
         UserDetails existingUser = userDetailsRepository.findByEmail(email);
 
-        if (existingUser != null) {
-            existingUser.setEmail(email);
-            existingUser.setPhoneNumber(phoneNumber);
-            existingUser.setFirstName(firstName);
-            existingUser.setMiddleName(middleName);
-            existingUser.setLastName(lastName);
+        if (existingUser == null) {
+            UserDetails newUser = new UserDetails();
+            newUser.setEmail(email);
+            newUser.setPhoneNumber(phoneNumber);
+            newUser.setFirstName(firstName);
+            newUser.setMiddleName(middleName);
+            newUser.setLastName(lastName);
 
-            userDetailsRepository.save(existingUser);
+            userDetailsRepository.save(newUser);
+            return "New user details added!";
+        } else {
+            return "Failed! User with this email already exists.";
         }
-        return "New user details added!";
+    }
+
+    public List<UserDetails> getUserDetails(){
+        return userDetailsRepository.findAll();
     }
 }
