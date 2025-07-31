@@ -2,7 +2,6 @@ package com.va.vinassets.controllers;
 
 import com.va.vinassets.models.UserDetails;
 import com.va.vinassets.services.UserDetailsService;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
